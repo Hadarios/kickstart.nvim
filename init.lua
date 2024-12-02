@@ -993,12 +993,14 @@ vim.cmd [[
   endfunction
   nnoremap <expr> <leader>cn ChangeName()
 
-
   function! ChangeNameVisual()
     let newname = input('Name? ')
     return ":s/\\([^ ]*(\\)/" . newname . "::\\1/ \<Enter>"
   endfunction
   vnoremap <expr> <leader>cn ChangeNameVisual()
+
+  autocmd BufNewFile *.js r ~/.config/vimtemplates/js.js | 0d_
+  autocmd BufNewFile *.user.js r ~/.config/vimtemplates/userscript.js | 0d_
 ]]
 
 -- The line beneath this is called `modeline`. See `:help modeline`
