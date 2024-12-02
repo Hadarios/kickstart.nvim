@@ -152,10 +152,10 @@ vim.opt.listchars = { tab = '» ', trail = '·', nbsp = '␣' }
 vim.opt.inccommand = 'split'
 
 -- Show which line your cursor is on
-vim.opt.cursorline = true
+vim.opt.cursorline = false
 
 -- Minimal number of screen lines to keep above and below the cursor.
-vim.opt.scrolloff = 10
+vim.opt.scrolloff = 3
 
 -- [[ Basic Keymaps ]]
 --  See `:help vim.keymap.set()`
@@ -785,7 +785,7 @@ require('lazy').setup({
           -- Accept ([y]es) the completion.
           --  This will auto-import if your LSP supports it.
           --  This will expand snippets if the LSP sent a snippet.
-          ['<C-y>'] = cmp.mapping.confirm { select = true },
+          ['<Enter>'] = cmp.mapping.confirm { select = true },
 
           -- If you prefer more traditional completion keymaps,
           -- you can uncomment the following lines
@@ -845,7 +845,11 @@ require('lazy').setup({
       -- Load the colorscheme here.
       -- Like many other themes, this one has different styles, and you could load
       -- any other, such as 'tokyonight-storm', 'tokyonight-moon', or 'tokyonight-day'.
-      vim.cmd.colorscheme 'tokyonight-night'
+      vim.cmd.colorscheme 'sorbet'
+      vim.api.nvim_set_hl(0, 'Normal', { bg = '#000000' })
+      vim.api.nvim_set_hl(0, 'Pmenu', { bg = '#1e1e1e', fg = '#c0c0c0' }) -- Popup background and text
+      vim.api.nvim_set_hl(0, 'PmenuSel', { bg = '#3c3c3c', fg = '#ffffff' }) -- Selected item in the popup
+      vim.api.nvim_set_hl(0, 'PmenuBorder', { fg = '#444444' }) -- Optional: Add border color
 
       -- You can configure highlights by doing something like:
       vim.cmd.hi 'Comment gui=none'
@@ -965,6 +969,37 @@ require('lazy').setup({
     },
   },
 })
+
+-- Here: vimscript
+vim.cmd [[
+  set expandtab " "
+  set shiftwidth=4
+  vnoremap , <
+  vnoremap ; >
+
+  let @a=":%s/• \\(.*\\)/#include <\\1>/g"
+  nnoremap t @a<Enter>
+  let @b=":%s/• \\(.*\\)/#include \"\\1\"/g"
+  nnoremap ( @b<Enter>
+
+  let @c=":s/• \\(.*\\)/#include <\\1>/g"
+  vnoremap t @c<Enter>
+  let @d=":s/• \\(.*\\)/#include \"\\1\"/g"
+  vnoremap ( @d<Enter>
+
+  function! ChangeName()
+    let newname = input('Name? ')
+    return ":%s/\\([^ ]*(\\)/" . newname . "::\\1/ \<Enter>"
+  endfunction
+  nnoremap <expr> <leader>cn ChangeName()
+
+
+  function! ChangeNameVisual()
+    let newname = input('Name? ')
+    return ":s/\\([^ ]*(\\)/" . newname . "::\\1/ \<Enter>"
+  endfunction
+  vnoremap <expr> <leader>cn ChangeNameVisual()
+]]
 
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
